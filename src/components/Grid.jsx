@@ -1,103 +1,167 @@
 import React, {useState, useEffect} from 'react';
-import Cell from "./Cell";
+import Cell from './Cell';
+import Snake from './Snake';
+import Food from './Food';
 
 function Grid(props) {
-    const [rows, setRows] = useState([]);
     const [snake, setSnake] = useState([
-        {x: props.startX, y: props.startY}
+        {x: props.snakeStart.x, y: props.snakeStart.y}
     ])
-    const [time, setTime] = useState(3);
 
-    let snakeBuffer = '';
+    const [food, setFood] = useState({
+        x: props.foodStart.x, y: props.foodStart.y
+    })
 
-    function renderGrid () {
-        console.log('ici ça tick');
-        return rows.rows.map((row, a) => {
-            return row.map((cell, b) => {
-                return(
-                    <Cell type={cell === 0 ? 'BLANK' : 'SNAKE'} key={`${cell}-${a}/${b}`}></Cell>
-                );
-            })
-        })
+    const [time, setTime] = useState(0)
+
+    const [snakeBuffer, setSnakeBuffer] = useState('')
+
+    function exportScore() {
+        props.setScore(snake.length)
     }
-
     function placeSnake() {
-        let truc = []
+        let rows = []
         for (let i = 0; i < props.size; i++) {
             let row = [];
             for (let j = 0; j < props.size; j++) {
-                let cell = '';
-                if (snake[0].y === i && snake[0].x === j) {
+                if(snake.findIndex(morceau => morceau.x === j && morceau.y ===i) !== -1) {
                     row.push(
-                        <Cell type='SNAKE' key={`${j}/${i}`}></Cell>
+                        <Snake key={`h${i}/l${j}`}></Snake>
+                    ) 
+                } else if (food.x === j && food.y === i) {
+                    row.push(
+                        <Food key={`h${i}/l${j}`}></Food>
                     ) 
                 } else {
                     row.push(
-                        <Cell type='BLANK' key={`${j}/${i}`}></Cell>
+                        <Cell key={`h${i}/l${j}`}></Cell>
                     ) 
                 }
             } 
-            truc.push(row);
+            rows.push(row);
         }
-        //setRows(truc);
-        console.log(snake[0]);
 
-        return truc;
+        return rows;
+    }
+
+    function placeFood() {
+        setFood({
+            x: Math.floor(Math.random()*props.size),
+            y: Math.floor(Math.random()*props.size)
+        });
+
+        exportScore();
+        return true;
     }
 
     useEffect(() => {
         const snakeSet = setSnake.bind(this);
-        //placeSnake(snake);
 
-        setInterval(() => {
+        const gameStartInterval = setInterval(() => {
             setTime(time => time + 1);
-            let nextPos;
-    
+
             if(Array.isArray(snake) && snake.length > 0) {
                 if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(snakeBuffer)){
                     switch (snakeBuffer) {
                         case 'ArrowUp':
                             if(snake[0].y-1 !== -1){
-                                /*let tempRows = rows;
-                                tempRows[snake[0].y-1][snake[0].x] = 1;
-                                tempRows[snake[0].y][snake[0].x] = 0;
-                                setRows(rows => tempRows);*/
                                 let tempSnake = snake;
+                                if(snake.findIndex(part => part.x === tempSnake[0].x && part.y === tempSnake[0].y-1) !== -1){
+                                    alert('ded');
+                                    break;
+                                }
                                 tempSnake.unshift({x:snake[0].x, y:snake[0].y-1});
-                                tempSnake.pop()
-                                console.log(tempSnake);
+                                if(snake[0].x === food.x && snake[0].y === food.y){
+                                    placeFood();
+                                } else {
+                                    tempSnake.pop()
+                                }
                                 snakeSet(tempSnake);
+                            } else {
+                                alert('ded');
+                                break;
                             }
-                            console.log(snake, rows)
                             break;
                         case 'ArrowDown':
-                            nextPos = rows[snake[0].y+1][snake[0].x]
+                            if(snake[0].y+1 < props.size){
+                                let tempSnake = snake;
+                                if(snake.findIndex(part => part.x === tempSnake[0].x && part.y === tempSnake[0].y+1) !== -1){
+                                    alert('ded');
+                                    break;
+                                }
+                                tempSnake.unshift({x:snake[0].x, y:snake[0].y+1});
+                                if(snake[0].x === food.x && snake[0].y === food.y){
+                                    placeFood();
+
+                                } else {
+                                    tempSnake.pop()
+                                }
+                                snakeSet(tempSnake);
+                            } else {
+                                alert('ded');
+                                break;
+                            }
                             break;
                         case 'ArrowRight':
-                            nextPos = rows[snake[0].y][snake[0].x+1]
+                            if(snake[0].x+1 < props.size){
+                                let tempSnake = snake;
+                                if(snake.findIndex(part => part.x === tempSnake[0].x+1 && part.y === tempSnake[0].y) !== -1){
+                                    alert('ded');
+                                    break;
+                                }
+                                tempSnake.unshift({x:snake[0].x+1, y:snake[0].y});
+                                if(snake[0].x === food.x && snake[0].y === food.y){
+                                    placeFood();
+                                } else {
+                                    tempSnake.pop()
+                                }
+                                snakeSet(tempSnake);
+                            } else {
+                                alert('ded');
+                                break;
+                            }
                             break;
                         case 'ArrowLeft':
-                            nextPos = rows[snake[0].y][snake[0].x-1]
+                            if(snake[0].x-1 !== -1){
+                                let tempSnake = snake;
+                                if(snake.findIndex(part => part.x === tempSnake[0].x-1 && part.y === tempSnake[0].y) !== -1){
+                                    alert('ded');
+                                    break;
+                                }
+                                tempSnake.unshift({x:snake[0].x-1, y:snake[0].y});
+                                if(snake[0].x === food.x && snake[0].y === food.y){
+                                    placeFood();
+                                } else {
+                                    tempSnake.pop()
+                                }
+                                snakeSet(tempSnake);
+                            } else {
+                                alert('ded');
+                                break;
+                            }
                             break;
                         default:
                             break;
                     }
                 }    
             }
-        }, 1000)
+        }, 300)
+
+        return () => {
+            clearInterval(gameStartInterval);
+        };
         
-    }, [])
+    }, [food, snakeBuffer])
 
     function changeSnakeBuffer(e) {
         if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-            snakeBuffer = e.key;
+            setSnakeBuffer(e.key);
         }
     }
     
     document.addEventListener('keydown', changeSnakeBuffer);
 
     const grid = placeSnake();
-
     return (
         <div className={`grid grid-cols-${props.size} grid-rows-${props.size} h-${props.size*6} w-${props.size*6}`}>
             {grid}
