@@ -1,24 +1,31 @@
-import { useState } from 'react';
+import React from 'react';
 
-function Cell(props){
-    const [cellType, setCellType] = useState(props.type);
-    let className = 'h-5 w-5 m-auto';
+class Cell extends React.Component {
+    constructor(props){
+        super(props)
 
-    if(cellType === "BLANK") {
-        className += ' bg-gray-300 rounded-sm';
-    } else if (cellType === "SNAKE") {
-        className += ' bg-gray-500 rounded-sm animate-pulse-fast';
-    } else if (cellType === "FOOD") {
-        className += ' bg-yellow-500 rounded-full';
+        this.state = { className : '' };
     }
 
-    function componentDidUpdate(prevProps){
-        console.log(prevProps);
+    componentDidMount() {
+        switch (this.props.type) {
+            case 'BLANK':
+                this.setState({className :  'h-5 w-5 m-auto bg-gray-300 rounded-sm'});
+                break;
+            case 'SNAKE':
+                this.setState({className : 'h-5 w-5 m-auto bg-gray-500 rounded-sm animate-pulse-fast'});
+                break;
+            case 'FOOD':
+                this.setState({className : 'h-5 w-5 m-auto bg-yellow-500 rounded-full'});
+                break;
+            default:
+                break;
+        }
     }
-
-    return (
-        <div className={className}></div>
-    )
+    
+    render() {
+        return <div className={this.state.className}></div>;
+    }
 }
 
 export default Cell;
