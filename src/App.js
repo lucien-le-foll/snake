@@ -14,20 +14,7 @@ function App() {
   });
   const [score, setScore] = useState(1);
   const [lost, setLost] = useState(false);
-  const [reset, setReset] = useState(false);
-
-  useEffect(() => {
-
-    setSnakeStart([]);
-    setFoodStart();
-
-    if(localStorage.key('snake') && localStorage.key('food')){
-      setSnakeStart(JSON.parse(localStorage.getItem('snake')));
-      setFoodStart(JSON.parse(localStorage.getItem('food')));
-    }
-  }, [])
-
-  
+  const [reset, setReset] = useState(false);  
 
   function displayLost(){
     setLost(true);

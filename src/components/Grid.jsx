@@ -57,17 +57,29 @@ function Grid(props) {
         return true;
     }
 
+    useEffect(() => {
+        const snakeSet = setSnake.bind(this);
+        const foodSet = setFood.bind(this);
+
+        if(localStorage.key('snake') && localStorage.key('food')){
+            snakeSet(JSON.parse(localStorage.getItem('snake')));
+            foodSet(JSON.parse(localStorage.getItem('food')));
+        }
+    }, [])
+
     // utilisation de useEffect pour ne modifier le composant qu'après son montage
     useEffect(() => {
         const snakeSet = setSnake.bind(this);
         const lostSet = setLost.bind(this);
+        const foodSet = setFood.bind(this);
         //const resetSet = setReset.bind(this);
 
+        
         function startingInterval() {
             return setInterval(() => {
                 setTime(time => time + 1);
 
-                if(time %20 === 0) {
+                if(time %10 === 0) {
                     props.storage.setItem('snake', JSON.stringify(snake));
                     props.storage.setItem('food', JSON.stringify(food));
                 }
